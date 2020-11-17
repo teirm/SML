@@ -22,8 +22,11 @@ fun lst     [x]      = x
 fun nlength []       = 0
   | nlength (x::xs)  = 1 + nlength(xs);
 
+(* Fast iterative way to get the length
+   of a list. Note the use of an 
+   accumulator *)
 local
-    fun addlen (n, [])  = 0
+    fun addlen (n, [])  = n
       | addlen(n, x::l) = addlen(n+1, l)
 in
     fun length l = addlen (0, l)
@@ -31,6 +34,11 @@ end;
 
 fun take ([], i)    = []
   | take (x::xs, i) = if i > 0 then x::take(xs, i-1) else [];
+
+fun rtake ([], _, taken)    = taken
+  | rtake (x::xs, i, taken) = 
+        if i>0 then rtake(xs, i-1, x::taken) 
+        else taken;
 
 fun drop ([], _)    = []
   | drop (x::xs, i) = if i>0 then drop (xs, i-1)
@@ -41,13 +49,13 @@ fun nth ([x], 0)    = x
 
 fun concat []       = []
   | concat (l::ls)   = l @ concat ls;
-
+(*
 fun zip (x::xs, y::ys)  = (x,y)::zip(xs,ys)
   | zip _               = [];
-
 local 
     fun conspair ((x,y),(xs,ys)) = (x::xs, y::ys);
 in
     fun unzip []                 = []
       | unzip (pair::pairs)      = conspair(pair, unzip pairs)
 end;
+*)

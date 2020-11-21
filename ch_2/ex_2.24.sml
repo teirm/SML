@@ -14,12 +14,12 @@ signature ARITH =
   end;
 
 
-structure Real =
+structure Real : ARITH =
   struct 
   type t            = real;
   val  zero         = 0.0;
   fun  sum      (x:t, y:t) = x+y : t;
-  fun  diff     (x:t, y:t) = x-y : t;
+  fun  diff     (x:t, y:t) = sum(x,~y) : t;
   fun  prod     (x:t, y:t) = x*y : t;
   fun  quo      (x:t, y:t) = x/y : t;
   end;

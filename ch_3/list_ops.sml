@@ -49,13 +49,16 @@ fun nth ([x], 0)    = x
 
 fun concat []       = []
   | concat (l::ls)   = l @ concat ls;
-(*
+
 fun zip (x::xs, y::ys)  = (x,y)::zip(xs,ys)
   | zip _               = [];
+
 local 
     fun conspair ((x,y),(xs,ys)) = (x::xs, y::ys);
 in
-    fun unzip []                 = []
+    fun unzip []                 = ([], []) 
       | unzip (pair::pairs)      = conspair(pair, unzip pairs)
 end;
-*)
+
+fun my_zip ([], [])     = []
+  | my_zip (x::xs, y::ys) = (x,y)::zip(xs,ys);

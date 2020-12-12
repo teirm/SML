@@ -2,6 +2,8 @@
     Matrix operations in SML
 *)
 
+use "list_ops.sml";
+
 fun headcol []                  = []
   | headcol ((x::_) :: rows)    = x :: headcol rows;
 
@@ -35,3 +37,13 @@ fun add_rows ([], [])            = []
 fun matrix_add ([], [])          = []
   | matrix_add (rowA::rowsA, rowB::rowsB) = 
       add_rows(rowA, rowB) :: matrix_add(rowsA, rowsB);
+
+fun change_row_signs ([])           = []
+  | change_row_signs ([a])          = [a]
+  | change_row_signs (a::b::xs)     = a::(~b::change_row_signs(xs));
+
+fun remove_column ([], p)           = []
+  | remove_column (row::rows, p)    = remove_by_index(row, p)::remove_column(rows,p); 
+
+fun shrink_matrix (row::rows, p)    = remove_column(rows,p);
+

@@ -62,3 +62,12 @@ end;
 
 fun my_zip ([], [])     = []
   | my_zip (x::xs, y::ys) = (x,y)::zip(xs,ys);
+
+(* Remove the first occurence of an element from a list *)
+fun remove_list_elem ([],p)         = []
+  | remove_list_elem (x::xs,p)      = if p = x then xs
+                                      else x::(remove_list_elem(xs,p));
+
+fun remove_by_index ([], i)         = []
+  | remove_by_index (x::xs, i)      = if i = 0 then xs
+                                      else x::remove_by_index(xs, i-1);

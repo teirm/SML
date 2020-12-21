@@ -47,7 +47,8 @@ fun quickselect ([], _)         = hd [] (* error -- abort *)
   | quickselect ([x], _)        = x
   | quickselect (a::bs, i)      =
         let fun partition (left, right, [], i)             = if length(left) + 1 = i then a
-                                                             else if length(left) <= i then quickselect(right, i-length(left)-1) 
+                                                             else if length(left) < i 
+                                                                  then quickselect(right, i-length(left)-1) 
                                                              else quickselect(left, i)
               | partition (left, right, x::xs, i)          = if x<=a then partition(x::left, right, xs, i)
                                                                      else partition(left, x::right, xs, i)

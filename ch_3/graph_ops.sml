@@ -45,6 +45,27 @@ fun pathsort graph =
       sort(starts, [], []) 
   end;
 
+(* 
+   Answer from net:
+   Notice how none of the calls to sort not on the
+   error path append to path or visited.
+
+   Bubble an error up by using another function
+*)
+fun pathsort2 graph =
+  let fun sort ([], path, visited) = [visited]
+        | sort (x::xs, path, visited) = 
+            if x mem path then []
+            else if x mem visited then sort(xs, path, visited)
+            else 
+              let fun sortnew []        = [] (*propagate cycle detection*)
+                    | sortnew [vis]     = sort(xs,path,x::vis)
+              in sortnew(sort(nexts(x,graph),x::path,visited))
+        val (xs, _) = ListPair.unzip graph
+  in 
+        sort(xs, [], [])
+  end;
+
 fun newvisit (x, (visited, cys)) = (x::visited, cys);
 
 fun cyclesort graph = 

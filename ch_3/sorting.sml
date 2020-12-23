@@ -124,3 +124,21 @@ fun takedrop ([], n, xs)    = (xs, [])
   | takedrop (x::l, n, xs)  = 
     if n>0 then takedrop(l, n-1, x::xs)
            else (xs, x::l);
+
+(* top down merge sort using alts *)
+fun alts_tmergesort []      = []
+  | alts_tmergesort [x]     = [x]
+  | alts_tmergesort xs      =
+        let val (a1,a2)     = alts(xs, [], [])
+        in merge(alts_tmergesort(a1), 
+                 alts_tmergesort(a2))
+        end;
+
+(* top down merge sort using take drop *)
+fun takedrop_tmergesort []  = []
+  | takedrop_tmergesort [x] = [x]
+  | takedrop_tmergesort xs  = 
+        let val (l1,l2)     = takedrop(xs, (List.length xs) div 2, [])
+        in merge(takedrop_tmergesort(List.rev l1), 
+                 takedrop_tmergesort(List.rev l2))
+        end;

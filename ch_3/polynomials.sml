@@ -44,8 +44,17 @@ structure Poly =
             val term    = sign ^ a_str ^ m_str
         in show(xs, s^term) 
         end;
-
-
-
+    
+    (*quotient and remainder *)
+    fun quorem (ts, (n,b)::us)  = 
+      let fun dviding ([],          qs) = (rev qs, [])
+            | dividing ((m,a)::ts,  qs) = 
+              if m<n then (rev qs, (m,a)::ts)
+              else dividing (sum (ts, termprod ((m-n, ~a/b), us)),
+                             (m-n, a/b)::qs)
+      in dividing (ts, []) end;
+    fun gcd ([], us) = us
+      | gcd (ts, us)  = gcd(#2 (quorem(us,ts)), ts);
     end;
+
 

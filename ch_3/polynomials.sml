@@ -53,6 +53,7 @@ structure Poly =
               else dividing (sum (ts, termprod ((m-n, ~a/b), us)),
                              (m-n, a/b)::qs)
       in dividing (ts, []) end;
+
     fun gcd ([], us) = us
       | gcd (ts, us)  = gcd(#2 (quorem(us,ts)), ts);
     end;

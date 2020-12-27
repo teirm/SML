@@ -3,6 +3,7 @@
 *)
 
 
+datatype degree = Duke | Marquis | Earl | Viscount | Baron;
 datatype person = King
                 | Peer of string*string*int
                 | Knight of string
@@ -22,7 +23,7 @@ fun superior_from_map(p1,p2) =
        else false
     end;
 
-fun title King                  = "His Majest the King"
+fun title King                  = "His Majesty the King"
   | title (Peer(deg, terr,_))   = "The " ^ deg ^ " of " ^ terr
   | title (Knight(name))        = "Sir " ^ name
   | title (Peasant(name))       = name
@@ -39,3 +40,22 @@ fun distance ((x1,y1):Point, (x2,y2):Point) =
 fun area (Circle(_, r))                   = ((r*r)*3.14)
   | area (Square(_, s))                   = s*s
   | area (Rectangle((x1,y1), (x2,y2)))    =  Real.abs(x1-x2) * Real.abs(y1-y2);
+
+(* merge implemented using case expression *)
+fun merge(xlist, ylist) : real list = 
+    case xlist of 
+        []      => ylist
+    |   x::xs   => (case ylist of 
+                        []      => xlist
+                    |   y::ys   => if x<=y then x::merge(xs, ylist)
+                                           else y::merge(xlist, ys));
+
+(* title implemented using case expression *)
+fun case_title(person) =
+    case person of 
+        King                => "His Majesty the king"
+    |   Peer(deg, terr, _)  => "The " ^ deg ^ " of " ^ terr
+    |   Knight(name)        => "Sir " ^ name
+    |   Peasant(name)       => name
+    |   Esquire(name,vill)  => name ^ ", Esq., of " ^ vill;
+    

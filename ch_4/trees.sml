@@ -5,6 +5,12 @@
 datatype 'a tree = Lf
                  | Br of 'a * 'a tree * 'a tree;
 
+datatype 'a list = End
+                 | Node of 'a * 'a list;
+
+datatype ('a,'b)ltree = LLf of 'b
+                      | LBr of 'a * ('a,'b)ltree * ('a,'b)ltree;
+
 (* return the number of labels in a tree *)
 fun size Lf                 = 0
   | size (Br(v,t1,t2))      = 1 + size(t1) + size(t2);

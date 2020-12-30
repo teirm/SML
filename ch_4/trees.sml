@@ -5,8 +5,8 @@
 datatype 'a tree = Lf
                  | Br of 'a * 'a tree * 'a tree;
 
-datatype 'a list = End
-                 | Node of 'a * 'a list;
+datatype 'a my_list = End
+                 | Node of 'a * 'a my_list;
 
 datatype ('a,'b)ltree = LLf of 'b
                       | LBr of 'a * ('a,'b)ltree * ('a,'b)ltree;

@@ -55,3 +55,31 @@ fun check_reflect(Lf, Lf)   = true
         if v1=v2 then check_reflect(t1,s2) andalso check_reflect(t2,s1)
         else false
   | check_reflect(_,_) = false;
+
+(* tree traversals *)
+fun preord (Lf, vs)             = vs
+  | preord (Br(v,t1,t2), vs)    = v :: preord(t1, preord(t2,vs));
+
+fun inord (Lf, vs)             = vs
+  | inord (Br(v,t1,t2), vs)    = inord(t1, v::inord(t2,vs));
+
+fun postord (Lf, vs)             = vs
+  | postord (Br(v,t1,t2), vs)    = postord(t1, v::postord(t2,vs));
+
+(* Building a balanced tree form a preorder list *)
+fun balpre []       = Lf
+  | balpre(x::xs)   = 
+    let val k = length xs div 2
+    in Br(x, balpre(List.take(xs,k)), balpre(List.drop(xs,k)))
+    end;
+
+(* Building a balanced tree from inorder list *)
+fun balin []        = Lf
+  | balin xs        = 
+    let val k       = length xs div 2
+        val y::ys   = List.drop(xs,k)
+    in Br(y, balin(List.take(xs,k)), balin ys)
+    end;
+
+(* Building a balanced tree from post order list *)
+fun balpost xs      = reflect(balpre(List.rev xs));  

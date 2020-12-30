@@ -11,6 +11,9 @@ datatype 'a list = End
 datatype ('a,'b)ltree = LLf of 'b
                       | LBr of 'a * ('a,'b)ltree * ('a,'b)ltree;
 
+datatype 'a mtree = MLf
+                  | MBr of 'a * 'a mtree list;
+
 (* return the number of labels in a tree *)
 fun size Lf                 = 0
   | size (Br(v,t1,t2))      = 1 + size(t1) + size(t2);
@@ -43,3 +46,12 @@ fun balanced Lf             = true
                                  if balanced(t1) then balanced(t2)
                                  else false
                               else false;
+
+(* Check if two trees satisfy
+     t = reflect(u)
+*)
+fun check_reflect(Lf, Lf)   = true
+  | check_reflect(Br(v1,t1,t2),Br(v2,s1,s2)) = 
+        if v1=v2 then check_reflect(t1,s2) andalso check_reflect(t2,s1)
+        else false
+  | check_reflect(_,_) = false;

@@ -23,7 +23,7 @@ structure Heap : PRIORITY_QUEUE =
     
     val empty = Lf;
 
-    fun null Lf     = true;
+    fun null Lf     = true
       | null (Br _) = false;
 
     fun min (Br(v,_,_)) = v;
@@ -45,7 +45,7 @@ structure Heap : PRIORITY_QUEUE =
             if w <= v then Br(w,t,Lf)
                       else Br(v,Br(w,Lf,Lf),Lf)
       | siftdown (w,t1 as Br(v1,p1,q1), t2 as Br(v2,p2,q2)) = 
-            if w <= v1 andalso w <= v2 then B(w,t1,t2)
+            if w <= v1 andalso w <= v2 then Br(w,t1,t2)
             else if v1 <= v2 then Br(v1, siftdown(w,p1,q1),t2)
                (* v2 < v1 *) else Br(v2, t1, siftdown(w,p2,q2));
 

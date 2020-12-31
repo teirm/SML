@@ -31,3 +31,8 @@ fun loext (Lf, w)           = Br(w,Lf,Lf)
 fun lorem (Lf)                          = raise Size
   | lorem (Br(_,Lf,Lf))                 = Lf
   | lorem (Br(_,t1 as Br(v,_,_),t2))    = Br(v,t2,lorem t1);
+
+fun fill_flex_array (x, n)  = compsame(x, n);
+
+fun to_list (Lf, v)                     = v
+  | to_list (t as Br(a,_, _), v)        = to_list(lorem(t), a::v); 

@@ -1,5 +1,7 @@
 (* Functions as values in ML *)
 
+use "../ch_4/trees.sml";
+
 val square = fn x:real => x*x;
 
 val cons   = fn(x,y) => x::y;
@@ -105,3 +107,27 @@ fun foldl f e []        = e
 
 fun foldr f e []        = e
   | foldr f e (x::xs)   = f(x, foldr f e xs);
+
+
+fun cartprod (xs, ys) = 
+    foldr (fn (x, pairs) =>
+            foldr (fn (y,l) => (x,y)::l) pairs ys)
+    [] xs;
+
+fun fold_exists pred = foldl (fn(x,e) => pred(x) orelse e) false;
+
+fun cartprodif (xs,ys) = 
+    foldr (fn(x,pairs) =>
+            foldr(fn (y,l) => if y<x then (x,y)::l else l) pairs ys)
+    [] xs;
+
+fun ex517 (xs, ys) = map (fn (x,y) => x-y) (cartprodif(xs,ys));
+
+
+(* more recursive functionals *)
+fun repeat f n x =
+    if n>0 then repeat f (n-1) (f x)
+           else x;
+
+fun treefold f e Lf             = e
+  | treefold f e (Br(u,t1,t2))  = f(u, treefold f e t1, treefold f e t2);

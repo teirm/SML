@@ -34,3 +34,7 @@ datatype 'a seqnode = Nil3
 and      'a seq     = Seq of unit -> 'a seqnode;
 
 fun from3 k = Cons3(k, Seq(fn()=>from3(k+1)));
+
+fun take3 (xq, 0)                = []
+  | take3 (Nil3, n)              = raise Subscript
+  | take3 (Cons3(x,Seq(xf)),n)   = x::take3(xf(),n-1);

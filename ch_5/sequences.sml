@@ -30,11 +30,43 @@ fun take2 (xq, 0)       = []
         end;
 
 datatype 'a seqnode = Nil3
-                    | Cons3 of 'a * 'a seq
-and      'a seq     = Seq of unit -> 'a seqnode;
+                    | Cons3 of 'a * 'a seq2
+and      'a seq2     = Seq of unit -> 'a seqnode;
 
 fun from3 k = Cons3(k, Seq(fn()=>from3(k+1)));
 
 fun take3 (xq, 0)                = []
   | take3 (Nil3, n)              = raise Subscript
   | take3 (Cons3(x,Seq(xf)),n)   = x::take3(xf(),n-1);
+
+fun squares Nil : int seq       = Nil
+  | squares (Cons(x,xf))        = Cons(x*x, fn()=>squares(xf()));
+
+fun add (Cons(x,xf), Cons(y, yf))   = Cons(x+y, fn()=>add(xf(), yf()))
+  | add _                           = Nil;
+
+fun Nil             @ yq    = yq
+  | (Cons(x,xf))    @ yq    = Cons(x,fn() => (xf()) @ yq);
+
+fun interleave (Nil, yq)        = yq
+  | interleave(Cons(x,xf),yq)   = 
+        Cons(x,fn()=>interleave(yq, xf()));
+
+fun map f Nil                   = Nil
+  | map f (Cons(x, xf))          = Cons(f x, fn() => map f (xf()));
+
+fun filter pred Nil             = Nil
+  | filter pred (Cons(x,xf))    =
+        if pred x then Cons(x, fn() => filter pred (xf()))
+                  else filter pred (xf());
+
+fun iterates f x = Cons(x, fn() => iterates f (f x));
+
+fun null Nil = true
+  | null _   = false;
+
+fun add_pairs Nil : int seq            = Nil
+  | add_pairs (Cons(x,xf))             =
+        (case xf() of
+            Nil             => Cons(x+0, fn()=>add_pairs(Nil))
+          | (Cons(y,yf))    => Cons(x+y, fn() => add_pairs(yf())));

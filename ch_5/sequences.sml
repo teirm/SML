@@ -65,6 +65,12 @@ fun iterates f x = Cons(x, fn() => iterates f (f x));
 fun null Nil = true
   | null _   = false;
 
+fun repeat k Nil            = Nil
+  | repeat k (Cons(x, xf))  = 
+    let fun rp 0 = repeat k (xf())
+          | rp k = Cons(x, fn() => rp(k-1))
+    in rp k end;
+
 fun add_pairs Nil : int seq            = Nil
   | add_pairs (Cons(x,xf))             =
         (case xf() of

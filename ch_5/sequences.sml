@@ -71,8 +71,22 @@ fun repeat k Nil            = Nil
           | rp k = Cons(x, fn() => rp(k-1))
     in rp k end;
 
+fun repeat_mult (k, n, Nil)             = Nil
+  | repeat_mult (k, n, (Cons(x, xf)))   = 
+    let fun rp_m (0, n) = repeat_mult(k, n, (xf()))
+          | rp_m (k, n) = Cons(x*n, fn() => rp_m(k, n))
+    in rp_m(k,n) end;
+
 fun add_pairs Nil : int seq            = Nil
   | add_pairs (Cons(x,xf))             =
         (case xf() of
             Nil             => Cons(x+0, fn()=>add_pairs(Nil))
           | (Cons(y,yf))    => Cons(x+y, fn() => add_pairs(yf())));
+
+fun take_while (_, Nil)                    = Nil
+  | take_while (p, (Cons(x,xf)))           = if p(x) then Cons(x, fn()=> take_while(p, (xf())))
+                                                     else Nil;
+
+fun drop_while (_, Nil)                    = Nil
+  | drop_while (p, (Cons(x,xf)))           = if p(x) then drop_while(p, (xf()))
+                                                     else Cons(x, fn()=>drop_while(p, (xf())));

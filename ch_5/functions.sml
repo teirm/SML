@@ -60,7 +60,7 @@ fun double_min g m n = minimization (fn i => minimization (fn j => g(i,j)) n) m;
 
 (* sections *)
 fun secl x f y = f(x,y);
-fun secr f x y = f(x,y);
+fun secr f y x = f(x,y);
 
 (* combinators *)
 (* composition *)

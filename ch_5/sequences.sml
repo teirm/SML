@@ -90,3 +90,47 @@ fun take_while (_, Nil)                    = Nil
 fun drop_while (_, Nil)                    = Nil
   | drop_while (p, (Cons(x,xf)))           = if p(x) then drop_while(p, (xf()))
                                                      else Cons(x, fn()=>drop_while(p, (xf())));
+
+fun seqChange (coins, coinvals, 0, coinsf)          = Cons(coins, coinsf)
+  | seqChange (coins, [], amount, coinsf)           = coinsf()
+  | seqChange (coins, c::coinvals, amount, coinsf)  = 
+    if amount<0 then coinsf()
+    else seqChange(c::coins, c::coinvals, amount-c, 
+                   fn()=>seqChange(coins, coinvals, amount, coinsf));
+
+fun sift p = filter (fn n => n mod p <> 0);
+
+fun sieve (Cons(p,nf)) = Cons(p, fn()=>sieve(sift p (nf())));
+
+(* Newton-Raphson Method *)
+fun nextApprox a x = (a/x + x) / 2.0;
+
+fun within (eps:real) (Cons(x,xf)) = 
+    let val Cons(y,yf)  = xf()
+    in  if Real.abs(x-y) < eps then y
+        else within eps (Cons(y,yf))
+    end;
+
+fun sum_from Nil            = Nil
+  | sum_from (Cons(x,xf))   = 
+    (case xf() of 
+        Nil             => Cons(x+0,fn()=>sum_from(Nil))
+      | (Cons(y,yf))    => Cons(x+y,fn()=>sum_from(Cons(x+y,yf)))); 
+
+fun fact_from Nil           = Nil
+  | fact_from (Cons(x,xf))  = 
+    (case xf() of
+        Nil             => Cons(x*1, fn()=>fact_from(Nil))
+      | (Cons(y,yf))    => Cons(x*y, fn()=>fact_from(Cons(x*y,yf))));
+
+fun exp_from (term, num, den, a, Nil)            = Nil
+  | exp_from (term, num, den, a, (Cons(x,xf)))   = 
+            let val next_d = if term=0 then 1 else den*term 
+                val next_pow = if term=0 then 1 else num*a 
+                val next_term = x+(real(next_pow)/real(next_d))
+            in  Cons(next_term, fn()=>exp_from(term+1,next_pow,next_d,a,Cons(next_term,xf))) 
+            end;
+
+fun seqSummation n = sum_from(from n);
+fun seqFactorial n = fact_from(from n);
+fun seqExponential n = exp_from(0,1,1,n,Cons(0.0,fn()=>Nil));

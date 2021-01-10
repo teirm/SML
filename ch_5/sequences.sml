@@ -1,21 +1,57 @@
 (* Sequences of infinite lists *)
 
-datatype 'a seq = Nil
-                | Cons of 'a * (unit -> 'a seq);
+use "../ch_3/list_ops.sml";
+use "sequence_sig.sml";
+use "functions.sml";
 
-fun hd (Cons(x,xf)) = x
-  | hd Nil          = raise Empty;
+structure Seq : SEQUENCE =
+    struct 
+    exception Empty
+    
+    fun cons (x,xq) = Cons(x, fn()=>xq);
+    
+    fun null Nil = true
+      | null _   = false;
 
-fun tl (Cons(x,xf)) = xf()
-  | tl Nil          = raise Empty;
+    fun hd (Cons(x,xf)) = x
+      | hd Nil          = raise Empty;
 
-fun cons (x,xq) = Cons(x, fn()=>xq);
+    fun tl (Cons(x,xf)) = xf()
+      | tl Nil          = raise Empty;
+    
+    fun fromList l = List.foldr cons Nil l;
+    
+    fun toList Nil              = []
+      | toList (Cons(x,xf))   = x::toList(xf());
 
-fun from k = Cons(k, fn()=>from(k+1));
+    fun take (xq, 0)        = [] 
+      | take (Nil,n)        = raise Subscript
+      | take (Cons(x,xf),n) = x::take(xf(),n-1);
 
-fun take (xq, 0)        = [] 
-  | take (Nil,n)        = raise Subscript
-  | take (Cons(x,xf),n) = x::take(xf(),n-1);
+    fun drop (xq, 0)        = xq
+      | drop (Nil,n)        = raise Subscript
+      | drop (Cons(x,xf),n) = drop(xf(),n-1);
+
+    fun Nil             @ yq    = yq
+      | (Cons(x,xf))    @ yq    = Cons(x,fn() => (xf()) @ yq);
+    
+    fun interleave (Nil, yq)        = yq
+      | interleave(Cons(x,xf),yq)   = 
+            Cons(x,fn()=>interleave(yq, xf()));
+
+    fun map f Nil                   = Nil
+      | map f (Cons(x, xf))          = Cons(f x, fn() => map f (xf()));
+
+    fun filter pred Nil             = Nil
+      | filter pred (Cons(x,xf))    =
+            if pred x then Cons(x, fn() => filter pred (xf()))
+                      else filter pred (xf());
+
+    fun iterates f x = Cons(x, fn() => iterates f (f x));
+
+
+    fun from k = Cons(k, fn()=>from(k+1));
+    end;
 
 datatype 'a seq2  = Nil2
                   | Cons2 of unit -> 'a * 'a seq2;
@@ -45,29 +81,9 @@ fun squares Nil : int seq       = Nil
 fun add (Cons(x,xf), Cons(y, yf))   = Cons(x+y, fn()=>add(xf(), yf()))
   | add _                           = Nil;
 
-fun Nil             @ yq    = yq
-  | (Cons(x,xf))    @ yq    = Cons(x,fn() => (xf()) @ yq);
-
-fun interleave (Nil, yq)        = yq
-  | interleave(Cons(x,xf),yq)   = 
-        Cons(x,fn()=>interleave(yq, xf()));
-
-fun map f Nil                   = Nil
-  | map f (Cons(x, xf))          = Cons(f x, fn() => map f (xf()));
-
-fun filter pred Nil             = Nil
-  | filter pred (Cons(x,xf))    =
-        if pred x then Cons(x, fn() => filter pred (xf()))
-                  else filter pred (xf());
-
-fun iterates f x = Cons(x, fn() => iterates f (f x));
-
-fun null Nil = true
-  | null _   = false;
-
-fun repeat k Nil            = Nil
-  | repeat k (Cons(x, xf))  = 
-    let fun rp 0 = repeat k (xf())
+fun seq_repeat k Nil            = Nil
+  | seq_repeat k (Cons(x, xf))  = 
+    let fun rp 0 = seq_repeat k (xf())
           | rp k = Cons(x, fn() => rp(k-1))
     in rp k end;
 
@@ -80,8 +96,8 @@ fun repeat_mult (k, n, Nil)             = Nil
 fun add_pairs Nil : int seq            = Nil
   | add_pairs (Cons(x,xf))             =
         (case xf() of
-            Nil             => Cons(x+0, fn()=>add_pairs(Nil))
-          | (Cons(y,yf))    => Cons(x+y, fn() => add_pairs(yf())));
+            Nil             => Cons(x+0, fn()=> add_pairs(Nil))
+          | (Cons(y,yf))    => Cons(x+y, fn()=> add_pairs(yf())));
 
 fun take_while (_, Nil)                    = Nil
   | take_while (p, (Cons(x,xf)))           = if p(x) then Cons(x, fn()=> take_while(p, (xf())))
@@ -98,7 +114,7 @@ fun seqChange (coins, coinvals, 0, coinsf)          = Cons(coins, coinsf)
     else seqChange(c::coins, c::coinvals, amount-c, 
                    fn()=>seqChange(coins, coinvals, amount, coinsf));
 
-fun sift p = filter (fn n => n mod p <> 0);
+fun sift p = Seq.filter (fn n => n mod p <> 0);
 
 fun sieve (Cons(p,nf)) = Cons(p, fn()=>sieve(sift p (nf())));
 
@@ -131,6 +147,19 @@ fun exp_from (term, num, den, a, Nil)            = Nil
             in  Cons(next_term, fn()=>exp_from(term+1,next_pow,next_d,a,Cons(next_term,xf))) 
             end;
 
-fun seqSummation n = sum_from(from n);
-fun seqFactorial n = fact_from(from n);
+fun seqSummation n = sum_from(Seq.from n);
+fun seqFactorial n = fact_from(Seq.from n);
 fun seqExponential n = exp_from(0,1,1,n,Cons(0.0,fn()=>Nil));
+
+fun pair x y = (x,y);
+
+fun makeqq (xq, yq)     = Seq.map (fn x=> Seq.map (pair x) yq) xq;
+fun takeqq (xqq, (m,n)) = List.map ((secr Seq.take) n) (Seq.take(xqq,m));
+
+fun enumerate Nil                       = Nil
+  | enumerate (Cons(Nil,xqf))           = enumerate(xqf())
+  | enumerate (Cons(Cons(x,xf), xqf))   =
+        Cons(x, fn()=>Seq.interleave(enumerate(xqf()), xf()));
+
+fun powerof2 n = repeat (fn(x)=>x*2) n 1
+fun pack(i,j) = powerof2(i-1)*(2*j-1);

@@ -32,6 +32,9 @@ in
     fun length l = addlen (0, l)
 end;
 
+fun upto (m,n) = 
+    if m>n then [] else m::upto(m+1,n);
+
 fun take ([], i)    = []
   | take (x::xs, i) = if i > 0 then x::take(xs, i-1) else [];
 

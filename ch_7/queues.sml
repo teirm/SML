@@ -141,3 +141,34 @@ structure S3 : QUEUE = Queue3;
 structure AbsQueue1 :> QUEUE = Queue1;
 structure AbsQueue2 :> QUEUE = Queue2;
 structure AbsQueue3 :> QUEUE = Queue3;
+
+(* Queues as abstract types *)
+abstype 'a queue1 = Q1 of 'a list
+    with 
+    val empty = Q1 [];
+    
+    fun enq(Q1 q, x)    = Q1(q@[x]);
+    
+    fun qnull(Q1(x::q)) = false
+      | qnull _         = true;
+    
+    fun qhd(Q1(x::q))     = x;
+    
+    fun deq(Q1(x::q))     = Q1 q;
+    end;
+
+abstype 'a queue2 = Empty
+                  | Enq of 'a queue2 * 'a
+    with 
+    val empty = Empty
+    and enq   = Enq;
+
+    fun qnull (Enq _)   = false
+      | qnull Empty     = true;
+
+    fun qhd (Enq(Empty,x))  = x
+      | qhd (Enq(q,x))      = qhd q;
+
+    fun deq (Enq(Empty,x))  = Empty
+      | deq (Enq(q, x))     = Enq(deq q, x);
+    end;

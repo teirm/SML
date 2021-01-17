@@ -1,5 +1,7 @@
 (* Three representations of a Queue in SML *)
 
+use "../ch_5/sequences.sml";
+
 signature QUEUE = 
     sig 
     eqtype 'a t                        (* type of queues *)
@@ -171,4 +173,25 @@ abstype 'a queue2 = Empty
 
     fun deq (Enq(Empty,x))  = Empty
       | deq (Enq(q, x))     = Enq(deq q, x);
+    end;
+
+(* Functors to test the Queue structures *)
+functor TestQueue (Q : QUEUE) =
+    struct
+    fun fromList l = foldl (fn (x,q) => Q.enq(q,x)) Q.empty l;
+
+    fun toList q   = if Q.null q then []
+                     else Q.hd q :: toList(Q.deq q);
+    end;
+
+functor BreadthFirst (Q: QUEUE) =
+    struct
+    fun enqlist q xs = foldl(fn (x,q) => Q.enq(q,x)) q xs;
+    fun search next x = 
+        let fun bfs q =
+            if Q.null q then Nil else
+                let val y = Q.hd q
+                in Cons(y, fn()=>bfs (enqlist (Q.deq q) (next y)))
+                end
+        in bfs(Q.enq(Q.empty, x)) end;
     end;

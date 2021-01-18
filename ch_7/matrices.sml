@@ -41,3 +41,31 @@ structure IntZSP =
     fun sum (x,y)   = x+y : t;
     fun prod (x,y)  = x*y : t;
     end;
+
+(* Graph Applications -- Adjacency Matrix *)
+structure BoolZSP = 
+    struct
+    type t      = bool;
+    val zero    = false;
+    fun sum (x,y) = x orelse y;
+    fun prod (x,y) = x andalso y;
+    end;
+
+(* Path matrix to implement Floyd-Warshall Algorithm
+   See algebra on a closed semi-ring *)
+structure PathZSP = 
+    struct 
+    type t = int;
+    val SOME zero   = Int.maxInt;
+    val sum         = Int.min;
+    fun prod(m,n)   = if m=zero orelse n=zero then zero
+                      else m+n;
+    end;
+
+structure PathMatrix = MatrixZSP(PathZSP);
+
+fun fast_paths mat = 
+    let val n = length mat
+        fun f (m,mat) = if n-1 <= m then mat
+                        else f(2*m, PathMatrix.prod(mat,mat))
+    in f(1,mat) end;

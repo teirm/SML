@@ -48,5 +48,5 @@ functor Dictionary (Key: ORDER) : DICTIONARY =
                         GREATER => Bran(a, x, update(t1, b, y), t2)
                     |   EQUAL   => Bran(a, y, t1, t2)
                     |   LESS    => Bran(a, x, t1, update(t1, b, y)));
-        end
-    end;
+    end
+end;

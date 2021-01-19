@@ -50,3 +50,42 @@ functor Dictionary (Key: ORDER) : DICTIONARY =
                     |   LESS    => Bran(a, x, t1, update(t1, b, y)));
     end
 end;
+
+(* 
+   Representation of a Dictionary using Lists 
+   In my opinion -- uglier and less efficient 
+   than the tree repsentation 
+*)
+functor ListDictionary (Key : ORDER) : DICTIONARY = 
+    struct 
+
+    type key = Key.t;
+
+    abstype 'a t = LD of (key * 'a) list
+        with
+
+        exception E of key;
+
+        val empty = LD([]);
+
+        fun lookup (LD [], b)            = raise E b
+          | lookup (LD((k,v)::xs), b)    = 
+                (case Key.compare(k,b) of
+                    EQUAL => v
+                 |  ord   => lookup(LD(xs),b));
+        
+        fun insert (LD [], b, y)           = LD([(b,y)])
+          | insert (LD((k,v)::xs), b, y)    = 
+                (case Key.compare(k,b) of 
+                        GREATER => LD((b,y)::(k,v)::xs)
+                    |   EQUAL   => raise E b
+                    |   LESS    => insert(LD(xs), b, y));
+
+        fun update (LD [], b, y)           = LD([(b,y)])
+          | update (LD((k,v)::xs), b, y)    = 
+                (case Key.compare(k,b) of 
+                      GREATER => LD((b,y)::(k,v)::xs)
+                    | EQUAL   => LD((b,y)::xs)
+                    | LESS    => update(LD(xs), b, y));
+    end
+end;

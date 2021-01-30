@@ -58,7 +58,7 @@ structure ImpSeq :> IMP_SEQUENCE =
             if pred x then Cons(x, delay(fn()=>filter pred (force(xp))))
                       else filter pred (force(xp));
     
-    (* what does this do.... *)
+    (* This takes a sequence of sequences and concatenates them *) 
     fun concat xqq =  
         if null xqq then empty
         else if null(hd xqq) then concat(tl xqq)

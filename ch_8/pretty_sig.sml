@@ -1,9 +1,9 @@
 (* signature for pretty printer *)
 signature PRETTY =
     sig
-    type t
-    val blo : int * t list -> t
-    val str : string -> t
-    val brk : int -> t
-    val pr  : TextIO.outstream * t * int -> unit
+    type expression 
+    val blo : int * expression list -> expression
+    val str : string -> expression 
+    val brk : int -> expression 
+    val pr  : TextIO.outstream * expression * int -> unit
     end;

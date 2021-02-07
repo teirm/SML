@@ -14,9 +14,15 @@ functor Lexical (Keyword : KEYWORD) : LEXICAL =
 
     fun member (x:string, l) = List.exists (fn y => x=y) l;
     
-    (* Is the given string a keyword or an id *)
-    fun alphaToken a = if member(a, Keyword.alphas) then Key(a)
-                                                    else Id(a);
+    (* Is the given string a keyword, number, or id 
+
+        string -> token
+
+     *)
+    fun alphaNumToken str = if member(str, Keyword.alphas) then Key(str)
+                          else case Int.fromString(str) of
+                            NONE            => Id(str)
+                        |   SOME (integer)  => Num(integer);
     
     (* scanning of a symbolic keyword 
        
@@ -43,7 +49,7 @@ functor Lexical (Keyword : KEYWORD) : LEXICAL =
          |  SOME (c, substr1)   => 
                 if Char.isAlphaNum c then
                     let val (id, substr2) = Substring.splitl Char.isAlphaNum substr
-                        val tok           = alphaTok(Substring.string id)
+                        val tok           = alphaNumTok(Substring.string id)
                     in scanning(tok::tokens, substr2)
                     end
                 else if Char.isPunct c then (*  special symbol *)
@@ -57,8 +63,6 @@ functor Lexical (Keyword : KEYWORD) : LEXICAL =
     end;
 
 (* Notes:
-   For ex 9.1 -- handle that like alphaTok
-
    For ex 9.2 -- just handle comments as special symbols. If one is 
    found drop characters in substr2 until the closing symbol is found
    pass the result into the recursive call to scanning

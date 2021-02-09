@@ -79,7 +79,7 @@ functor Parsing (Lex: LEXICAL) : PARSE =
     *)
     fun repeat ph tokens = (ph -- repeat ph >> (op::) || empty ) tokens;
 
-    (* ... going to need to study this one *)
+    (* Read pg 367 - 368 *)  
     fun infixes (ph, prec_of, apply) = 
         let fun over k tokens = next k (ph tokens)
             and next k (x, Lex.Key(a)::tokens) = 

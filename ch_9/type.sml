@@ -12,6 +12,7 @@ structure Type : TYPE =
     local (** parsing **)
         fun makeFun (ty1,ty2) = Con("->", [ty1,ty2]);
         fun makePair (ty1,ty2) = Con(",", [ty1,ty2]);
+        fun makeList (ty1) = Con("list", [ty1]);
         open LamParsing
 
         (* Mutually recursive top down parser (Grammar Rules):
@@ -42,11 +43,14 @@ structure Type : TYPE =
                                        result of typ
         *)
         fun typ toks = 
-            (   atom -- "->" $-- typ >> makeFun
+            (   atom -- "->" $-- typ           >> makeFun
+             || atom -- ","  $-- typ           >> makePair
              || atom
             ) toks
         and atom toks = 
             (   $"'" -- id >> (Var o op^)
+             || $"int"    >> Var 
+             || $"string" >> Var
              || "(" $-- typ -- $")" >> #1
             ) toks;
         in
